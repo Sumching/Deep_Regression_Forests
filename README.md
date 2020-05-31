@@ -6,7 +6,7 @@ A simple pytorch implementation of [DRFs](https://arxiv.org/pdf/1712.07195).
 
 **MAE**
 
-![Free-Converter.com-test_mae-75192815](images/Free-Converter.com-test_mae-75192815.jpg)
+![Free-Converter.com-test_mae-75192815](pic/Free-Converter.com-test_mae-75192815.jpg)
 
 **CS**
 
@@ -14,4 +14,4 @@ A simple pytorch implementation of [DRFs](https://arxiv.org/pdf/1712.07195).
 
 **LOSS**
 
-![Free-Converter.com-train_loss-89912815](images/Free-Converter.com-train_loss-89912815.jpg)
+![Free-Converter.com-train_loss-89912815](pic/Free-Converter.com-train_loss-89912815.jpg)
