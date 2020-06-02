@@ -4,14 +4,46 @@ A simple pytorch implementation of [DRFs](https://arxiv.org/pdf/1712.07195).
 
 # Experiments
 
-**MAE**
+### Best Hyper-parameters:
 
-![Free-Converter.com-test_mae-75192815](pic/Free-Converter.com-test_mae-75192815.jpg)
+batch size: 32
 
-**CS**
+base learning rate:0.2
 
-![Free-Converter.com-test_cs-8572815](pic/Free-Converter.com-test_cs-8572815.jpg)
+VGG pretrained: VGG-Face
 
-**LOSS**
+**or**
 
-![Free-Converter.com-train_loss-89912815](pic/Free-Converter.com-train_loss-89912815.jpg)
+batch size: 32
+
+base learning rate:0.05
+
+VGG pretrained: VGG-Face
+
+different learning rate in layers
+
+
+
+**MAE**: 2.4~2.5 **CS**: 88%
+
+
+
+## Grad-CAM
+
+tree_id: choose a tree 
+
+node_id: choose a node
+
+```
+python grad_cam.py --tree_id=0 --node_id=16
+```
+
+
+
+**example**
+
+
+
+
+
+![cam](pic/cam.jpg)
