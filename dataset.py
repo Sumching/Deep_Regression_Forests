@@ -19,7 +19,7 @@ class DataMyload(Dataset):
         with open(train_list_dir,"r") as f: 
             lines = f.readlines()      
             for line in lines:
-                if 'noise' not in line:
+                if 'meiyou' not in line:
                     image_name, label = line.strip('\n').split(' ')
                     #print(image_name, label)
                     label = int(label) / 100.0
@@ -28,7 +28,7 @@ class DataMyload(Dataset):
         with open(test_list_dir,"r") as f: 
             lines = f.readlines()      
             for line in lines:
-                if 'noise' not in line:
+                if 'meiyou' not in line:
                     image_name, label = line.strip('\n').split(' ')
                     label = int(label) / 100.0
                     test_labels.append(label)
@@ -54,10 +54,10 @@ class DataMyload(Dataset):
         return len(self.list)
 
 
-def get_loader(train_list_dir='../train.txt',\
+def get_loader(train_list_dir='../tr_10.txt',\
      test_list_dir='../test.txt',\
      image_dir='/root/data/aishijie/Project/Morph_mtcnn_1.3_0.35_0.3/',\
-     batch_size=16, image_size=224, num_workers=20, train=True):
+     batch_size=32, image_size=224, num_workers=20, train=True):
     """Build and return a data loader."""
     transform = []
     transform.append(T.RandomHorizontalFlip())
@@ -65,7 +65,7 @@ def get_loader(train_list_dir='../train.txt',\
     #transform.append(T.Resize(image_size))
     transform.append(T.ToTensor())
     transform.append(T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)))
-    transforms.Lambda(lambda x: x + 1./128 * torch.rand(x.size()))
+    #transforms.Lambda(lambda x: x + 1./128 * torch.rand(x.size()))
     transform = T.Compose(transform)
 
     dataset = DataMyload(train_list_dir, test_list_dir, image_dir, transform, train)

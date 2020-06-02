@@ -6,7 +6,7 @@ import torchvision
 from dataset import get_loader
 
 if __name__ == "__main__":
-    Forest_solver = Forest_solver('../train.txt')
+    Forest_solver = Forest_solver('../tr_10.txt')
 
     model_dir = {"checkpoint":"./output/checkpoint/", "tb":"./output/tensorboard/"}
     for dir_ in model_dir:

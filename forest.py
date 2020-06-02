@@ -31,7 +31,7 @@ class Tree(nn.Module):
         """
         if x.is_cuda and not self.feature_mask.is_cuda:
             self.feature_mask = self.feature_mask.cuda()
-
+        #print(x.shape)
         feats = torch.mm(x,self.feature_mask) # ->[batch_size,n_used_feature]
         decision = torch.sigmoid(feats) # ->[batch_size,n_leaf]
 

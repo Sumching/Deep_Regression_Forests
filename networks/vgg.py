@@ -23,7 +23,7 @@ class VGG(nn.Module):
         x = self.features(x)
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
-        return x
+        return x[:, :128]
 
     def _initialize_weights(self):
         for m in self.modules():
@@ -69,5 +69,11 @@ def vgg16_bn(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['D'], batch_norm=False), **kwargs)
+    model = VGG(make_layers(cfg['D'], batch_norm=False), init_weights=False, **kwargs)
+    model.load_state_dict(model_zoo.load_url('https://download.pytorch.org/models/vgg16-397923af.pth'))
     return model
+
+if __name__ == "__main__":
+    a = vgg16_bn()
+    for key, value in a.named_parameters():
+        print(key)

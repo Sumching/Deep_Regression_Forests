@@ -1,5 +1,5 @@
 
-from networks.vgg import vgg16_bn
+from networks.vgg_face import VGG_16
 from utils.kmeans import kmeans
 from torch.optim import lr_scheduler
 import torch
@@ -11,12 +11,52 @@ import forest as ndf
 
 
 
+def find_params(model):
+    conv1_w = []
+    conv1_b = []
+
+    conv2_fc8_w = []
+    conv2_fc8_b = []
+
+    linear_w = []
+    linear_b = []
+
+    for name, param in model.named_parameters():
+        _, sub_name, num, w_b = name.split('.')
+        num = int(num)
+        if sub_name == 'features':
+            if num <= 14:
+                if w_b == 'weight':
+                    conv1_w.append(param)
+                else:
+                    conv1_b.append(param)
+            else:
+                if w_b == 'weight':
+                    conv2_fc8_w.append(param)
+                else:
+                    conv2_fc8_b.append(param)
+        elif sub_name == 'classifier':
+            if num <= 3:
+                if w_b == 'weight':
+                    linear_w.append(param)
+                else:
+                    linear_b.append(param)
+            else:
+                if w_b == 'weight':
+                    conv2_fc8_w.append(param)
+                else:
+                    conv2_fc8_b.append(param)
+
+    return conv1_w, conv1_b, conv2_fc8_w, conv2_fc8_b, linear_w, linear_b
+
+
 
 
 class Forest_solver():
     def __init__(self, list_dir, num_tree=5, depth=6, task_num=1):
         #super(Forest, self).__init__()
-        feat_layer = vgg16_bn(num_classes=128)
+        feat_layer = VGG_16()
+        feat_layer.load_weights()
 
         forest = ndf.Forest(n_tree=num_tree, tree_depth=depth, n_in_feature=128)
         model = ndf.NeuralDecisionForest(feat_layer, forest)
@@ -28,8 +68,16 @@ class Forest_solver():
         init_mean, init_sigma = self.kmeans_label(list_dir)
         self.model.forest.dist.init_kmeans(init_mean, init_sigma)
         #self.optimizer = torch.optim.Adam(self.model.parameters(),lr=0.05, betas=(0.5, 0.999))
-
-        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=0.05, momentum=0.9)
+        lr = 0.05
+        #conv1_w, conv1_b, conv2_fc8_w, conv2_fc8_b, linear_w, linear_b = find_params(self.model)
+        # print(len(conv1_w), len(conv1_b), len(conv2_fc8_w), len(conv2_fc8_b), len(linear_w), len(linear_b))
+        # input()
+        # self.optimizer = torch.optim.SGD([{'params':conv1_w, 'lr':0.05}, {'params':conv1_b, 'lr':0.05, 'weight_decay':0},\
+        #                     {'params':conv2_fc8_w, 'lr':0.05}, {'params':conv2_fc8_b, 'lr':0.05, 'weight_decay':0},\
+        #                     {'params':linear_w, 'lr':0.05},{'params':linear_b, 'lr':0.05, 'weight_decay':0}], lr=0.05, momentum=0.9)
+        param_list = feat_layer.get_weight_dict(lr)
+        self.optimizer = torch.optim.SGD(param_list, lr=0.05, momentum=0.9)
+        #self.optimizer = torch.optim.SGD([{'params':self.model.parameters(), 'lr':0.2}], lr=0.05, momentum=0.9)
         self.optimizers = [self.optimizer]
         def lambda_rule(iteration):
             if iteration < 10000:
@@ -63,11 +111,11 @@ class Forest_solver():
     def forward(self, x):
         predictions, pred4Pi = self.model(x)
         #input()
-        print(torch.mean(predictions, dim=1, keepdim=True))
+        #print(torch.mean(predictions, dim=1, keepdim=True))
         return predictions, pred4Pi
     def get_loss(self, x, y):
         predictions, pred4Pi = self.forward(x)
-        print(y)
+        #print(y)
         loss = torch.sum(0.5 * (y.view(-1, 1) - predictions) ** 2)/x.shape[0]
         return loss, pred4Pi
 
