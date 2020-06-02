@@ -100,4 +100,5 @@ class VGG_16(nn.Module):
 
 if __name__ == '__main__':
     a = VGG_16()
-    a.get_weight_dict(3)
+    for name, m in a.conv_2_2._modules.items():
+        print(name)

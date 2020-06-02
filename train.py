@@ -26,7 +26,7 @@ if __name__ == "__main__":
     dataiter = iter(train_data)
     testiter = iter(test_data)
 
-    for idx in range(30000):
+    for idx in range(30001):
         #time_start = datetime.datetime.now(asdas
         try:
             data, label = next(dataiter)

@@ -33,7 +33,7 @@ class Tree(nn.Module):
             self.feature_mask = self.feature_mask.cuda()
         #print(x.shape)
         feats = torch.mm(x,self.feature_mask) # ->[batch_size,n_used_feature]
-        decision = torch.sigmoid(feats) # ->[batch_size,n_leaf]
+        decision = torch.sigmoid(feats) # ->[batch_size,n_leaf - 1]
 
         decision = torch.unsqueeze(decision,dim=2)
         decision_comp = 1-decision
