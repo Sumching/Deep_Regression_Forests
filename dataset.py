@@ -2,6 +2,7 @@ import os.path
 import torch
 from glob import glob
 from torchvision import transforms
+import cv2
 from torch.utils.data import Dataset
 from PIL import Image
 import random
@@ -16,6 +17,8 @@ class DataMyload(Dataset):
         train_images_names = []
         test_labels = []
         test_images_names = []
+        #self.mean = np.array([93.5940, 104.7624, 129.1863])
+        self.mean = np.array([112, 112, 112])
         with open(train_list_dir,"r") as f: 
             lines = f.readlines()      
             for line in lines:
@@ -46,7 +49,9 @@ class DataMyload(Dataset):
         filename = self.list[index]
         image = Image.open(os.path.join(self.image_dir, filename))
         label = np.float32(self.labels[index])
-
+        #image = np.array(image).astype(np.float32)
+        #image -= self.mean
+        #image = Image.fromarray(image.astype('uint8'))#.convert('RGB')
         return self.transform(image), label
 
     def __len__(self):
@@ -60,8 +65,12 @@ def get_loader(train_list_dir='../tr_10.txt',\
      batch_size=32, image_size=224, num_workers=20, train=True):
     """Build and return a data loader."""
     transform = []
-    transform.append(T.RandomHorizontalFlip())
-    transform.append(T.RandomCrop(image_size))
+    transform.append(T.Resize(256))
+    if train:
+        transform.append(T.RandomHorizontalFlip())
+        transform.append(T.RandomCrop(image_size))
+    else:
+        transform.append(T.CenterCrop(image_size))
     #transform.append(T.Resize(image_size))
     transform.append(T.ToTensor())
     transform.append(T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)))
@@ -69,11 +78,11 @@ def get_loader(train_list_dir='../tr_10.txt',\
     transform = T.Compose(transform)
 
     dataset = DataMyload(train_list_dir, test_list_dir, image_dir, transform, train)
-
+    
     data_loader = torch.utils.data.DataLoader(dataset=dataset,
                                   batch_size=batch_size,
-                                  shuffle=True,
-                                  drop_last=True,
+                                  shuffle=(train==True),
+                                  drop_last=(train==True),
                                   num_workers=num_workers)
     return data_loader
 

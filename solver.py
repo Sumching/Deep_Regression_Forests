@@ -84,8 +84,14 @@ class Forest_solver():
                 lr_l = 1
             if 10000 <= iteration and iteration < 20000:
                 lr_l = 0.5
+           # if 10000 <= iteration and iteration < 15000:
+           #     lr_l = 0.5 ** 2
+           # if 15000 <= iteration and iteration < 20000:
+           #     lr_l = 0.5 ** 3
+           # if 20000 <= iteration and iteration < 25000:
+           #     lr_l = 0.5 ** 4
             if iteration >= 20000:
-                lr_l = 0.25
+                lr_l = 0.5 ** 2
             return lr_l
         self.schedulers = [lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule) for optimizer in self.optimizers]
 

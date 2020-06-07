@@ -52,7 +52,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='DRF')
     parser.add_argument('--tree_id', type=int, required=False, default=0)
-    parser.add_argument('--node_id', type=int, required=False, default=31)
+    parser.add_argument('--node_id', type=int, required=False, default=1)
     args=parser.parse_args()
 
     
